@@ -1,29 +1,47 @@
 import React, { useState } from "react";
-import { AUTH_API } from "../config/apiConfig";
-import Stack from "@mui/material/Stack";
+import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
+import { AUTH_API } from "../config/apiConfig";
+import { useAuth } from "../context/AuthContext";
 
 export function LoginForm() {
   const [formdata, setFormData] = useState({ userName: "", password: "" });
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
 
   const handleChange = (e) => {
     setFormData({ ...formdata, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    fetch(AUTH_API.login, {
+    const res = await fetch(AUTH_API.login, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formdata),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("response ", data);
-      })
-      .catch((err) => console.log("error ", err));
+    });
+    const result = await res.json();
+
+    if (!res.ok) {
+      // server returned non-2xx
+      throw new Error(result?.message || "Login failed");
+    }
+
+    if (result.message === 'success' && result?.data) {
+      const userData = {
+        accessToken: result?.data?.accessToken,
+        user: result?.data?.user || { email: formdata.userName }
+      };
+      login(userData);
+      navigate("/dashboard", { replace: true });
+    } else {
+      throw new Error(result?.message || "Login failed");
+    }
+
   };
   return (
     <div>
@@ -31,7 +49,7 @@ export function LoginForm() {
         <h2>login</h2>
         <Box
           component="div"
-          sx={{ width: 500, maxWidth: '100%'}}
+          sx={{ width: 500, maxWidth: '100%' }}
           autoComplete="off"
         >
           <div>
