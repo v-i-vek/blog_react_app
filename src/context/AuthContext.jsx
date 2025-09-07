@@ -3,6 +3,7 @@ import React,{createContext,useContext,useState,useEffect} from "react";
 const AuthContext = createContext();
 
 export function AuthProvider({children}){
+    console.log("user value ", children)
     const [user, setUser] = useState(() => {
         try {
             const savedAuth = localStorage.getItem("auth");

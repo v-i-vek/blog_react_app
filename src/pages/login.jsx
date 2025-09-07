@@ -59,7 +59,7 @@ export function LoginForm() {
               label="userName"
               name="userName"
               type="text"
-              varient="outlined"
+              variant="outlined"
               value={formdata.userName}
               onChange={handleChange}
               required
@@ -72,7 +72,7 @@ export function LoginForm() {
               id="password"
               label="password"
               name="password"
-              varient="outlined"
+              variant="outlined"
               type="password"
               value={formdata.password}
               onChange={handleChange}
